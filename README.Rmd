@@ -1,0 +1,44 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  fig.align = "center",
+  out.width = "100%"
+)
+library(htmltools)
+knitr::knit_hooks$set(imgcenter = function(before, options, envir){
+  if (before) {
+    HTML("<p align='center'>")
+  } else {
+    HTML("</p>")
+  }
+})
+```
+
+# xplots 
+
+[![R-CMD-check](https://github.com/paulnorthrop/xplots/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/paulnorthrop/xplots/actions/workflows/R-CMD-check.yaml)
+
+## Functions to produce plots of marks for an exam board
+
+The main functions are:
+
+* `components()`: plots to compare components marks for a given module.
+* `modules()`: plots to compare module marks within groups of modules. (**Not available yet!**)
+
+## Installation
+
+To install from GitHub:
+
+```{r installation, eval = FALSE, echo = TRUE}
+install.packages("remotes")
+install_github("paulnorthrop/xplots")
+```
+

@@ -1,0 +1,24 @@
+Package: xplots
+Type: Package
+Title: Functions to produce plots of marks for an exam board
+Version: 1.0.0
+Date: 2026-06-17
+Authors@R: c(
+    person(
+      "Paul", "Northrop",
+      email = "p.northrop@ucl.ac.uk",
+      role = c("aut", "cre", "cph")
+    )
+  )
+Description: Example code for producing (a) pairs plots of overall marks from 
+    different modules, and (b) pairs plots of component marks for given modules.
+Depends:
+    R (>= 4.1.0)
+Imports: graphics,
+    utils,
+    readxl
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.3
+Roxygen: list(markdown = TRUE)
