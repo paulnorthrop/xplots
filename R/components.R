@@ -170,7 +170,7 @@ components <- function(input = "marks", output = "plots", skip = 9,
     }
   }
   # Shut down the graphics device
-  dev.off()
+  grDevices::dev.off()
 
   return(invisible(componentMarks))
 }

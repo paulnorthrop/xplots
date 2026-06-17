@@ -15,6 +15,7 @@ Description: Example code for producing (a) pairs plots of overall marks from
 Depends:
     R (>= 4.1.0)
 Imports: graphics,
+    grDevices,
     utils,
     readxl
 License: GPL (>= 3)
