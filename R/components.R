@@ -20,24 +20,35 @@
 #'   * `"black"`: to plot in black,
 #'   * `"exclude"`: to exclude from the plots.
 #'
-#' @details A single PDF file is produced. Each page contains pairs plots to
-#'   compare component marks for a given module. There is a page for each
-#'   spreadsheet of module marks in the `input` directory.
+#' @details A single PDF file is produced. Each page contains a matrix of
+#'   scatterplots, produced using [`graphics::pairs`], in which the component
+#'   marks for a module are plotted against each other. There is a page for
+#'   each spreadsheet of module marks in the `input` directory. The title of a
+#'   plot is the module code followed by the module delivery code, e.g.
+#'   HPSC0003 A4U.
+#'
+#'   The relevant pass mark and the first/distinction mark of 70% are indicated
+#'   by dotted lines on the plots. For postgraduate modules (A7P) the area
+#'   where at least one mark is below the lower end of the condonable range
+#'   (40%) is shaded grey and any component mark below 40% is plotted using
+#'   a special symbol, a circle with a cross on it.
 #'
 #'   If an error is thrown when trying to produce a plot for a module then a
-#'   warning message is printed and this module is skipped.
+#'   warning message is printed and this module is skipped. If a module has
+#'   only one assessment component then this module also skipped.
 #'
 #' **Notes**
 #'
-#' * The files `HPSC0003.xls` etc seemed not to be Excel files, but rather
-#'   formatted as webpages (`.htm` or the equivalent).
-#'   This meant that I could not read their contents into R. To solve this, I
-#'   opened them in Excel and saved them as Excel Workbook (*.xlsx).
-#'   These module mark Excel files, e.g., `HPSC0003.xlsx`, should be placed
-#'   in the directory `marks`.
+#' * The files `HPSC0003.xls` etc, which I know have been downloaded direct
+#'   from Portico and advertised as Excel files, seem **not** to be Excel
+#'   files, but rather formatted as webpages (`.html` or the equivalent). This
+#'   meant that I could not read their contents into R. To solve this, I opened
+#'   them in Excel and saved them as Excel Workbook (*.xlsx). These module mark
+#'   Excel files, e.g., `HPSC0003.xlsx`, should be placed in the directory
+#'   `marks`.
 #' * It is assumed that a given `.xlsx` file does not mix students of Levels
 #'   4-6 with students of Level 7. The level is inferred by searching for the
-#'   FHEQ Level entry in the `.xlsx` file. If there are modules taken by
+#'   Module Delivery entry in the `.xlsx` file. If there are modules taken by
 #'   students of Level 6 and Level 7 then their marks should be in separate
 #'   files, for example, `HPSC0003.xlsx` and `HPSC0003level7.xlsx`.
 #' * The example file `HPSC0007.xlsx` contained marks for an alternative
@@ -46,8 +57,8 @@
 #'   the same number of assessments as in the main set of marks and that they
 #'   are in a comparable order. The argument `alt` determines how/whether these
 #'   marks are plotted.
-#' @return A named list containing the component marks for each module. The
-#'   names are the module codes.
+#' @return A named list containing the component marks for each module is
+#'   returned invisibly. The names are the module codes.
 #' @examples
 #' \dontrun{
 #' # The following code will produce a PDF file containing a page of plots for
@@ -92,10 +103,11 @@ components <- function(input = "marks", output = "plots", skip = 9,
   # or .xlsx files can be used
   paths <- paste0(input, "/", filenames)
   nModules <- length(filenames)
-  # Empty lists in which to store the module marks, levels and row numbers of
-  # alternative assessment marks
+  # Empty lists in which to store the module marks, levels, module delivery
+  # codes and row numbers of alternative assessment marks
   componentMarks <- list()
   levels <- list()
+  moduleDeliveryCodes <- list()
   altAssRows <- list()
   # For each module
   for (i in 1:nModules) {
@@ -123,18 +135,20 @@ components <- function(input = "marks", output = "plots", skip = 9,
     marksOnly <- grep("Mark", names(temp))
     temp <- temp[, marksOnly]
     overallMark <- grep("Overall Mark", names(temp))
-    temp <- temp[, -overallMark]
+    temp <- temp[, -overallMark, drop = FALSE]
     # read_excel() sometimes gets confused and makes numbers characters
     temp <- apply(temp, 2, as.numeric)
     colnames(temp) <- substring(colnames(temp), first = 1, last = 2)
     # 7. Store these marks in the list moduleMarks
     componentMarks[[i]] <- temp
-    # 8. Also read the FHEQ level in the premable to determine UGT vs PGT
+    # 8. Also read the Module Delivery in the premable to determine UGT vs PGT
     temp <- readxl::read_excel(path = paths[i], n_max = skip,
                                .name_repair = "minimal")
     temp <- as.data.frame(temp)
-    levelRow <- grep("FHEQ", temp[, 1])
-    levels[[i]] <- temp[levelRow, 2]
+    moduleDeliveryRow <- grep("Module Delivery", temp[, 1])
+    moduleDelivery <- substring(temp[moduleDeliveryRow, 2], 1, 3)
+    moduleDeliveryCodes[[i]] <- moduleDelivery
+    levels[[i]] <- as.numeric(substring(moduleDelivery, 2, 2))
   }
   # Name the elements of the list using the module codes
   names(componentMarks) <- substring(filenames, first = 1, last = 8)
@@ -156,8 +170,10 @@ components <- function(input = "marks", output = "plots", skip = 9,
   # Add a plot for each module to the output PDF file
   for (i in 1:nModules) {
     level <- levels[[i]]
-    plotTitle <- names(componentMarks)[i]
-    if (level == 7) {
+    moduleDeliveryCode <- moduleDeliveryCodes[[i]]
+    print(level)
+    plotTitle <- paste(names(componentMarks)[i], moduleDeliveryCode)
+    if (moduleDeliveryCode == "A7P") {
       tryCatch(
         plotPG(marks = componentMarks[[i]], plotTitle = plotTitle,
                zeros = zeros, altAssRows = altAssRows[[i]], alt = alt),
