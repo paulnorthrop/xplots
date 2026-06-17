@@ -16,7 +16,7 @@ Example code for producing
 The main functions are
 \itemize{
 \item \code{\link{components}}: plots to compare components marks for a given module.
-\item \code{\link{modules}}: plots to compare module marks within groups of modules.
+\item \code{modules}: plots to compare module marks within groups of modules.
 (\strong{Not available yet!})
 }
 }

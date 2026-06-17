@@ -8,7 +8,7 @@
 #' @details The main functions are
 #'
 #' * [`components`]: plots to compare components marks for a given module.
-#' * [`modules`]: plots to compare module marks within groups of modules.
+#' * `modules`: plots to compare module marks within groups of modules.
 #' (**Not available yet!**)
 #'
 #' @docType package
