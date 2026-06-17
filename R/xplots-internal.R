@@ -64,8 +64,8 @@ plotPG <- function(marks, plotTitle, zeros, altAssRows, alt){
 
   # Produces scatter plots of columns of component marks in `marks'.
   PGpanel <- function(x, y, lty = 3, col){
-    graphics::rect(0, 0, 40, 100, border = NA, col = grey(0.8))
-    graphics::rect(0, 0, 100, 40, border = NA, col = grey(0.8))
+    graphics::rect(0, 0, 40, 100, border = NA, col = grDevices::grey(0.8))
+    graphics::rect(0, 0, 100, 40, border = NA, col = grDevices::grey(0.8))
     graphics::abline(0, 1, lwd = 0.5)
     plotchars <- rep(20, length(x))
     plotchars[x < 40 | y < 40] <- 13
